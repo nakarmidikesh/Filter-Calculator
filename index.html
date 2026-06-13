@@ -257,12 +257,27 @@ function renderGrid() {
 
     // flip
     if (canFlip) {
+      let ht = null;
+      let flippedThisPress = false;
+
       div.addEventListener('contextmenu', e => {
-        e.preventDefault(); [f.w, f.h] = [f.h, f.w]; f.flipped = !f.flipped; renderGrid(); calc();
+        e.preventDefault();
+        if (flippedThisPress) return;
+        flippedThisPress = true;
+        [f.w, f.h] = [f.h, f.w]; f.flipped = !f.flipped; renderGrid(); calc();
       });
-      let ht;
-      div.addEventListener('touchstart', () => { ht = setTimeout(() => { [f.w,f.h]=[f.h,f.w]; f.flipped=!f.flipped; renderGrid(); calc(); }, 500); }, {passive:true});
-      div.addEventListener('touchend',   () => clearTimeout(ht), {passive:true});
+
+      div.addEventListener('touchstart', () => {
+        flippedThisPress = false;
+        ht = setTimeout(() => {
+          if (flippedThisPress) return;
+          flippedThisPress = true;
+          [f.w,f.h]=[f.h,f.w]; f.flipped=!f.flipped; renderGrid(); calc();
+        }, 500);
+      }, {passive:true});
+
+      div.addEventListener('touchend', () => clearTimeout(ht), {passive:true});
+      div.addEventListener('touchmove', () => { clearTimeout(ht); }, {passive:true});
     }
 
     fg.appendChild(div);
@@ -443,7 +458,7 @@ function calc() {
 
 renderGrid();
 
-const TRIAL_EXPIRY = new Date('2026-07-13T00:00:00');
+const TRIAL_EXPIRY = new Date('2026-07-12T00:00:00');
 if (new Date() > TRIAL_EXPIRY) {
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('expired-screen').style.display = 'flex';
