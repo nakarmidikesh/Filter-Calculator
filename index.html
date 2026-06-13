@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Camfil 30/30 Calculator — BSN DFX Studio</title>
+<!-- BSN DFX Studio — Camfil 30/30 Filter & Plenum Calculator — Australian Market -->
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f5f5f3;color:#1a1a1a;font-size:15px}
+.wrap{max-width:740px;margin:0 auto;padding:1.5rem 1rem 3rem}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem}
+.header h1{font-size:20px;font-weight:600;margin-bottom:2px}
+.header .sub{font-size:13px;color:#888}
+.brand{font-size:11px;font-weight:700;color:#1D9E75;letter-spacing:.03em;text-align:right;padding:5px 11px;border:1px solid #b8e8d0;border-radius:7px;background:#f0faf5;white-space:nowrap;text-transform:none}
+.card{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
+.sec-title{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.row{display:grid;gap:12px}
+.r2{grid-template-columns:1fr 1fr}
+.r3{grid-template-columns:1fr 1fr 1fr}
+label{font-size:13px;color:#555;display:block;margin-bottom:4px}
+input,select{width:100%;height:38px;border:1px solid #d0d0d0;border-radius:8px;padding:0 10px;font-size:14px;background:#fff;color:#1a1a1a;outline:none}
+input:focus,select:focus{border-color:#1D9E75}
+
+/* ── filter grid ── */
+.filter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:6px;margin-bottom:8px}
+.fb{border:1.5px solid #e0e0e0;border-radius:9px;padding:7px 6px 6px;background:#fafaf8;cursor:pointer;text-align:center;transition:border-color .12s,background .12s;user-select:none}
+.fb:hover{border-color:#1D9E75;background:#f0faf5}
+.fb.on{border-color:#1D9E75;background:#E8F8F2}
+.fb .fd{font-size:12px;font-weight:700;color:#1a1a1a;white-space:nowrap}
+.fb.on .fd{color:#0a5c3a}
+.fb .fa{font-size:10px;color:#bbb;margin-top:1px}
+.fb.on .fa{color:#2db37f}
+.fb .flip-tip{font-size:9px;color:#ddd;margin-top:2px}
+/* qty stepper shown when selected */
+.fb-qty{display:none;align-items:center;justify-content:center;gap:0;margin-top:6px}
+.fb.on .fb-qty{display:flex}
+.fb-qty button{width:26px;height:26px;border:1px solid #b8e8d0;border-radius:6px;background:#fff;color:#0a5c3a;font-size:16px;line-height:1;cursor:pointer;font-weight:700;flex-shrink:0}
+.fb-qty button:hover{background:#E8F8F2}
+.fb-qty span{min-width:28px;text-align:center;font-size:14px;font-weight:700;color:#0a5c3a}
+
+.sel-sum{font-size:13px;color:#666;margin-top:6px;min-height:18px}
+.btn-sm{font-size:12px;color:#666;cursor:pointer;background:none;border:1px solid #ddd;border-radius:6px;padding:3px 10px;margin-left:8px}
+.btn-sm:hover{background:#f0f0f0}
+
+.custom-row{display:flex;gap:8px;align-items:flex-end;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0}
+.custom-row input{height:36px}
+.custom-row button{height:36px;white-space:nowrap;padding:0 14px;border:1px solid #1D9E75;border-radius:8px;background:#E8F8F2;color:#0a5c3a;font-size:13px;cursor:pointer;flex-shrink:0}
+.custom-row button:hover{background:#d0f0e4}
+
+/* ── arrangement ── */
+.arr-wrap{margin-top:12px;padding-top:12px;border-top:1px solid #f0f0f0}
+.arr-inner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.arr-inner label{font-size:13px;color:#555;margin:0;white-space:nowrap}
+.arr-inner input[type=number]{width:64px;height:34px}
+.dir-btns{display:flex;gap:6px}
+.dir-btn{padding:5px 13px;border:1px solid #ddd;border-radius:7px;font-size:13px;cursor:pointer;background:#f8f8f6;color:#555;transition:all .12s}
+.dir-btn.active{border-color:#1D9E75;background:#E8F8F2;color:#0a5c3a;font-weight:700}
+.canvas-wrap{overflow-x:auto}
+canvas{border:1px solid #e0e0e0;border-radius:8px;background:#fff;display:block}
+
+/* ── results ── */
+.results{background:#f0faf5;border-radius:12px;padding:1rem 1.25rem;margin-top:1rem}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:8px}
+.mc{background:#fff;border-radius:8px;padding:.7rem 1rem;border:1px solid #e8e8e8}
+.mc .ml{font-size:12px;color:#888;margin-bottom:3px}
+.mc .mv{font-size:19px;font-weight:700;color:#1a1a1a}
+.mc .mu{font-size:12px;color:#888;margin-left:2px}
+.mc.ok .mv{color:#1D9E75}
+.mc.bad .mv{color:#c0392b}
+.sbar{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;font-size:13px;margin-top:10px;font-weight:600}
+.s-ok{background:#E8F8F2;color:#0a5c3a}
+.s-bad{background:#fdecea;color:#922b21}
+.pb{margin-top:12px;background:#fff;border-radius:8px;padding:1rem 1.25rem;border:1px solid #e8e8e8}
+.pb-title{font-size:13px;color:#888;margin-bottom:5px}
+.pb-val{font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-0.5px}
+.pb-note{font-size:12px;color:#888;margin-top:6px;line-height:1.8}
+.dvd{height:1px;background:#ebebeb;margin:12px 0}
+.bkt table{width:100%;font-size:13px;border-collapse:collapse}
+.bkt th{text-align:left;color:#888;font-weight:500;padding:5px 6px;border-bottom:1px solid #ebebeb}
+.bkt td{padding:5px 6px;border-bottom:1px solid #f5f5f5}
+.bkt tr:last-child td{font-weight:700;border-bottom:none}
+.footer{text-align:center;font-size:11px;color:#ccc;margin-top:2.5rem;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div id="expired-screen" style="display:none;min-height:60vh;align-items:center;justify-content:center;padding:2rem;text-align:center">
+  <div>
+    <div style="font-size:20px;font-weight:600;margin-bottom:8px">Trial period has expired</div>
+    <div style="font-size:14px;color:#888">This tool was provided by BSN DFX Studio for trial use.<br>Please contact BSN DFX Studio for continued access.</div>
+  </div>
+</div>
+<div class="wrap" id="main-content">
+
+  <div class="header">
+    <div>
+      <h1>Camfil 30/30 — Filter &amp; Plenum Calculator</h1>
+      <div class="sub">Australian market · All dimensions in mm · Depth 44mm</div>
+    </div>
+    <div class="brand">BSN DFX Studio</div>
+  </div>
+
+  <!-- 1. AIRFLOW -->
+  <div class="card">
+    <div class="sec-title">1. Airflow &amp; equipment opening</div>
+    <div class="row r3">
+      <div><label>Airflow (L/s)</label><input type="number" id="af" placeholder="e.g. 2500" min="0" oninput="calc()"></div>
+      <div><label>Opening width (mm)</label><input type="number" id="ow" placeholder="e.g. 1200" min="0" oninput="calc()"></div>
+      <div><label>Opening height (mm)</label><input type="number" id="oh" placeholder="e.g. 800" min="0" oninput="calc()"></div>
+    </div>
+  </div>
+
+  <!-- 2. FILTER SIZES -->
+  <div class="card">
+    <div class="sec-title">2. Select filter sizes
+      <button class="btn-sm" onclick="clearAll()">Clear all</button>
+    </div>
+    <p style="font-size:11px;color:#bbb;margin-bottom:9px">Click a size to select it · Use <strong style="color:#0a5c3a">+</strong> / <strong style="color:#c0392b">−</strong> to set quantity · Right-click (or tap &amp; hold) to flip WxH↔HxW</p>
+    <div class="filter-grid" id="fg"></div>
+    <div class="sel-sum" id="ss">No filters selected</div>
+
+    <!-- ARRANGEMENT (shown when ≥1 filter selected) -->
+    <div class="arr-wrap" id="arr-wrap" style="display:none">
+      <div class="arr-inner">
+        <label>Arrangement:</label>
+        <div class="dir-btns">
+          <div class="dir-btn active" id="btn-h" onclick="setDir('H')">⟷ Side by side</div>
+          <div class="dir-btn" id="btn-v" onclick="setDir('V')">↕ Stacked</div>
+          <div class="dir-btn" id="btn-g" onclick="setDir('G')">⊞ Grid</div>
+        </div>
+        <label id="col-lbl" style="display:none">Columns:</label>
+        <input type="number" id="ncols" value="2" min="1" style="display:none" oninput="calc()">
+      </div>
+      <div class="canvas-wrap"><canvas id="arrCanvas" height="160"></canvas></div>
+    </div>
+
+    <!-- CUSTOM SIZE -->
+    <div class="custom-row">
+      <div style="flex:1"><label style="font-size:12px">Custom width (mm)</label><input type="number" id="cw" placeholder="e.g. 300" min="1"></div>
+      <div style="flex:1"><label style="font-size:12px">Custom height (mm)</label><input type="number" id="ch" placeholder="e.g. 600" min="1"></div>
+      <button onclick="addCustom()">+ Add custom size</button>
+    </div>
+  </div>
+
+  <!-- 3. INSULATION -->
+  <div class="card">
+    <div class="sec-title">3. Plenum box insulation</div>
+    <div style="max-width:260px">
+      <label>Insulation thickness (mm)</label>
+      <input type="number" id="ins" placeholder="e.g. 25" min="0" oninput="calc()">
+    </div>
+    <p style="font-size:12px;color:#aaa;margin-top:8px">Insulation is applied to all four sides (added to both width and height).</p>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="res" style="display:none">
+    <div class="results">
+      <div class="sec-title">Results</div>
+      <div class="mg">
+        <div class="mc" id="mvc">
+          <div class="ml">Face velocity</div>
+          <div><span class="mv" id="vv">—</span><span class="mu">m/s</span></div>
+        </div>
+        <div class="mc">
+          <div class="ml">Total filter area</div>
+          <div><span class="mv" id="av">—</span><span class="mu">m²</span></div>
+        </div>
+        <div class="mc">
+          <div class="ml">Total filters</div>
+          <div><span class="mv" id="qv">—</span></div>
+        </div>
+        <div class="mc">
+          <div class="ml">Bank (WxH)</div>
+          <div><span class="mv" id="bkwh" style="font-size:14px">—</span></div>
+        </div>
+      </div>
+      <div class="sbar" id="vs"></div>
+      <div class="dvd"></div>
+      <div class="pb">
+        <div class="pb-title">Plenum box size (WxH)</div>
+        <div class="pb-val" id="pv">—</div>
+        <div class="pb-note" id="pn"></div>
+      </div>
+      <div class="bkt" id="bkt"></div>
+    </div>
+  </div>
+
+  <div class="footer">BSN DFX Studio · Camfil 30/30 Filter &amp; Plenum Calculator · Australian Market</div>
+</div>
+
+<script>
+/* ── BSN DFX Studio ─────────────────────────────────────
+   Camfil 30/30 Filter & Plenum Calculator
+   Australian Market · All dims mm · Depth 44mm
+   ─────────────────────────────────────────────────────── */
+
+const BASE = [
+  [241,495],[289,289],[289,594],[290,495],[343,495],[343,622],
+  [368,495],[394,394],[394,495],[394,594],[394,622],[444,495],
+  [444,594],[444,622],[495,495],[495,594],[495,622],[495,749],
+  [594,594],[622,622]
+].map(([w,h]) => ({w, h, origW:w, origH:h, qty:0, flipped:false, custom:false}));
+
+let filters = BASE.map(f => ({...f}));
+let direction = 'H';
+
+const roundUp25 = v => Math.ceil(v / 25) * 25;
+const area = f => (f.w / 1000) * (f.h / 1000);
+const lbl  = f => f.w + 'x' + f.h;
+
+function setDir(d) {
+  direction = d;
+  ['H','V','G'].forEach(x => {
+    document.getElementById('btn-'+x.toLowerCase()).className = 'dir-btn' + (d===x?' active':'');
+  });
+  const showCols = d === 'G';
+  document.getElementById('col-lbl').style.display = showCols ? '' : 'none';
+  document.getElementById('ncols').style.display   = showCols ? '' : 'none';
+  calc();
+}
+
+function renderGrid() {
+  const fg = document.getElementById('fg');
+  fg.innerHTML = '';
+  filters.forEach((f, i) => {
+    const div = document.createElement('div');
+    div.className = 'fb' + (f.qty > 0 ? ' on' : '');
+
+    const canFlip = f.w !== f.h;
+    div.innerHTML =
+      `<div class="fd">${lbl(f)}mm</div>` +
+      `<div class="fa">${area(f).toFixed(4)}m²</div>` +
+      (canFlip ? `<div class="flip-tip">R-click to flip</div>` : '') +
+      `<div class="fb-qty">` +
+        `<button class="qty-minus" data-i="${i}">−</button>` +
+        `<span>${f.qty}</span>` +
+        `<button class="qty-plus" data-i="${i}">+</button>` +
+      `</div>`;
+
+    // click on card = select (qty 1) if not selected
+    div.addEventListener('click', e => {
+      if (e.target.classList.contains('qty-plus') || e.target.classList.contains('qty-minus')) return;
+      if (f.qty === 0) { f.qty = 1; renderGrid(); calc(); }
+    });
+
+    // +/- buttons
+    div.querySelector('.qty-plus').addEventListener('click', e => {
+      e.stopPropagation(); f.qty++; renderGrid(); calc();
+    });
+    div.querySelector('.qty-minus').addEventListener('click', e => {
+      e.stopPropagation();
+      f.qty = Math.max(0, f.qty - 1);
+      renderGrid(); calc();
+    });
+
+    // flip
+    if (canFlip) {
+      div.addEventListener('contextmenu', e => {
+        e.preventDefault(); [f.w, f.h] = [f.h, f.w]; f.flipped = !f.flipped; renderGrid(); calc();
+      });
+      let ht;
+      div.addEventListener('touchstart', () => { ht = setTimeout(() => { [f.w,f.h]=[f.h,f.w]; f.flipped=!f.flipped; renderGrid(); calc(); }, 500); }, {passive:true});
+      div.addEventListener('touchend',   () => clearTimeout(ht), {passive:true});
+    }
+
+    fg.appendChild(div);
+  });
+}
+
+function addCustom() {
+  const cw = parseInt(document.getElementById('cw').value);
+  const ch = parseInt(document.getElementById('ch').value);
+  if (!cw || !ch || cw < 1 || ch < 1) { alert('Enter valid width and height.'); return; }
+  const ex = filters.find(f => (f.origW===cw&&f.origH===ch) || (f.origW===ch&&f.origH===cw));
+  if (ex) { ex.qty++; }
+  else { filters.push({w:cw, h:ch, origW:cw, origH:ch, qty:1, flipped:false, custom:true}); }
+  renderGrid(); calc();
+  document.getElementById('cw').value = '';
+  document.getElementById('ch').value = '';
+}
+
+function clearAll() {
+  filters.forEach(f => { f.qty=0; f.w=f.origW; f.h=f.origH; f.flipped=false; });
+  filters = filters.filter(f => !f.custom);
+  renderGrid(); calc();
+}
+
+// Build flat ordered list of filter instances
+function getInstances() {
+  const arr = [];
+  filters.filter(f => f.qty > 0).forEach(f => {
+    for (let i = 0; i < f.qty; i++) arr.push({w:f.w, h:f.h, lbl:lbl(f), custom:f.custom, flipped:f.flipped});
+  });
+  return arr;
+}
+
+// Compute bank dimensions from arrangement
+function getBankDims(instances, cols) {
+  if (!instances.length) return {bankW:0, bankH:0};
+  const rows = [];
+  for (let i = 0; i < instances.length; i += cols) rows.push(instances.slice(i, i+cols));
+  // each row: width = sum of filter widths, height = max filter height in that row
+  const bankW = Math.max(...rows.map(r => r.reduce((s,f) => s+f.w, 0)));
+  const bankH = rows.reduce((s, r) => s + Math.max(...r.map(f => f.h)), 0);
+  return {bankW, bankH};
+}
+
+function effectiveCols(instances) {
+  const n = instances.length;
+  if (!n) return 1;
+  if (direction === 'H') return n;        // all in one row
+  if (direction === 'V') return 1;        // one column
+  return Math.max(1, Math.min(parseInt(document.getElementById('ncols').value)||2, n));
+}
+
+const COLORS = ['#E8F8F2','#FFF8E8','#EAF0FF','#FFF0F5','#F0FFF4','#FAEEDA','#EDF5FF','#FBF0FF'];
+
+function drawCanvas(instances, cols) {
+  const cv = document.getElementById('arrCanvas');
+  if (!instances.length) { cv.width=0; cv.height=0; return; }
+  const rows = [];
+  for (let i = 0; i < instances.length; i += cols) rows.push(instances.slice(i, i+cols));
+  const bankW = Math.max(...rows.map(r => r.reduce((s,f)=>s+f.w,0)));
+  const bankH = rows.reduce((s,r) => s+Math.max(...r.map(f=>f.h)), 0);
+  const pad = 14;
+  const maxW = Math.min(680, window.innerWidth - 60);
+  const scale = Math.min((maxW - pad*2) / bankW, 150 / bankH, 1.8);
+  cv.width  = Math.round(bankW * scale) + pad * 2;
+  cv.height = Math.round(bankH * scale) + pad * 2;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, cv.width, cv.height);
+
+  const cmap = {};
+  let ci = 0;
+  instances.forEach(f => { if (!cmap[f.lbl]) cmap[f.lbl] = COLORS[ci++ % COLORS.length]; });
+
+  let y = pad;
+  rows.forEach(row => {
+    const rh = Math.max(...row.map(f => f.h));
+    let x = pad;
+    row.forEach(f => {
+      const fw = Math.round(f.w * scale);
+      const fh = Math.round(f.h * scale);
+      ctx.fillStyle = cmap[f.lbl];
+      ctx.fillRect(x, y, fw, fh);
+      ctx.strokeStyle = '#1D9E75';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x, y, fw, fh);
+      const fs = Math.max(8, Math.min(12, fw / 7));
+      ctx.font = `600 ${fs}px system-ui`;
+      ctx.fillStyle = '#1a1a1a';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      if (fw > 38 && fh > 16) ctx.fillText(f.lbl, x + fw/2, y + fh/2);
+      x += fw;
+    });
+    y += Math.round(rh * scale);
+  });
+}
+
+function calc() {
+  const Q  = parseFloat(document.getElementById('af').value);
+  const ow = parseFloat(document.getElementById('ow').value) || 0;
+  const oh = parseFloat(document.getElementById('oh').value) || 0;
+  const ins = parseFloat(document.getElementById('ins').value) || 0;
+
+  const instances = getInstances();
+  const totQty  = instances.length;
+  const totArea = instances.reduce((s,f) => s + area(f), 0);
+  const ss = document.getElementById('ss');
+  const arrWrap = document.getElementById('arr-wrap');
+
+  if (!totQty) {
+    ss.textContent = 'No filters selected';
+    arrWrap.style.display = 'none';
+    document.getElementById('res').style.display = 'none';
+    return;
+  }
+  ss.textContent = `${totQty} filter${totQty>1?'s':''} selected · Total face area: ${totArea.toFixed(4)} m²`;
+  arrWrap.style.display = 'block';
+
+  const cols = effectiveCols(instances);
+  const {bankW, bankH} = getBankDims(instances, cols);
+  drawCanvas(instances, cols);
+
+  document.getElementById('bkwh').textContent = `${bankW}x${bankH}mm`;
+
+  if (!Q || Q <= 0) { document.getElementById('res').style.display='none'; return; }
+
+  const vel = (Q / 1000) / totArea;
+
+  // Insulation on all 4 sides = +ins each side → +2*ins to both W and H
+  const baseW = Math.max(bankW, ow);
+  const baseH = Math.max(bankH, oh);
+  const rawW  = baseW + ins * 2;
+  const rawH  = baseH + ins * 2;
+  const pW    = roundUp25(rawW);
+  const pH    = roundUp25(rawH);
+
+  document.getElementById('vv').textContent = vel.toFixed(2);
+  document.getElementById('av').textContent = totArea.toFixed(3);
+  document.getElementById('qv').textContent = totQty;
+  document.getElementById('pv').textContent = `${pW}x${pH}mm`;
+
+  const notes = [];
+  notes.push(`Filter bank: ${bankW}x${bankH}mm`);
+  if (ow || oh) notes.push(`Equipment opening: ${ow||'—'}x${oh||'—'}mm`);
+  if (ow) notes.push(`Width governed by ${bankW>=ow?'filter bank':'opening'} (${Math.max(bankW,ow)}mm)`);
+  if (oh) notes.push(`Height governed by ${bankH>=oh?'filter bank':'opening'} (${Math.max(bankH,oh)}mm)`);
+  if (ins > 0) notes.push(`+${ins}mm insulation all sides → raw ${Math.round(rawW)}x${Math.round(rawH)}mm → rounded up to nearest 25mm`);
+  document.getElementById('pn').innerHTML = notes.join('<br>');
+
+  const mvc = document.getElementById('mvc');
+  const vs  = document.getElementById('vs');
+  if (vel <= 1.8) {
+    mvc.className = 'mc ok'; vs.className = 'sbar s-ok';
+    vs.textContent = `✓ Velocity OK — ${vel.toFixed(2)} m/s ≤ 1.8 m/s`;
+  } else {
+    mvc.className = 'mc bad'; vs.className = 'sbar s-bad';
+    vs.textContent = `✗ Velocity ${vel.toFixed(2)} m/s exceeds 1.8 m/s limit — add more filters`;
+  }
+
+  // Breakdown
+  const tm = {};
+  instances.forEach(f => {
+    if (!tm[f.lbl]) tm[f.lbl] = {qty:0, a:0};
+    tm[f.lbl].qty++; tm[f.lbl].a += area(f);
+  });
+  let brows = Object.entries(tm).map(([k,v]) =>
+    `<tr><td>${k}mm</td><td style="text-align:center">${v.qty}</td><td style="text-align:right">${v.a.toFixed(4)} m²</td></tr>`
+  ).join('');
+  brows += `<tr><td>Total</td><td style="text-align:center">${totQty}</td><td style="text-align:right">${totArea.toFixed(4)} m²</td></tr>`;
+  document.getElementById('bkt').innerHTML =
+    `<div class="dvd"></div><table><thead><tr><th>Filter size</th><th style="text-align:center">Qty</th><th style="text-align:right">Face area</th></tr></thead><tbody>${brows}</tbody></table>`;
+
+  document.getElementById('res').style.display = 'block';
+}
+
+renderGrid();
+
+const TRIAL_EXPIRY = new Date('2026-06-12T22:10:00');
+if (new Date() > TRIAL_EXPIRY) {
+  document.getElementById('main-content').style.display = 'none';
+  document.getElementById('expired-screen').style.display = 'flex';
+}
+</script>
+</body>
+</html>
