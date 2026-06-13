@@ -67,9 +67,11 @@ canvas{border:1px solid #e0e0e0;border-radius:8px;background:#fff;display:block}
 .mc .mv{font-size:19px;font-weight:700;color:#1a1a1a}
 .mc .mu{font-size:12px;color:#888;margin-left:2px}
 .mc.ok .mv{color:#1D9E75}
+.mc.warn .mv{color:#d68910}
 .mc.bad .mv{color:#c0392b}
 .sbar{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;font-size:13px;margin-top:10px;font-weight:600}
 .s-ok{background:#E8F8F2;color:#0a5c3a}
+.s-warn{background:#fdf3e3;color:#8a5a00}
 .s-bad{background:#fdecea;color:#922b21}
 .pb{margin-top:12px;background:#fff;border-radius:8px;padding:1rem 1.25rem;border:1px solid #e8e8e8}
 .pb-title{font-size:13px;color:#888;margin-bottom:5px}
@@ -412,9 +414,12 @@ function calc() {
 
   const mvc = document.getElementById('mvc');
   const vs  = document.getElementById('vs');
-  if (vel <= 1.8) {
+  if (vel >= 1.5 && vel <= 1.8) {
     mvc.className = 'mc ok'; vs.className = 'sbar s-ok';
-    vs.textContent = `✓ Velocity OK — ${vel.toFixed(2)} m/s ≤ 1.8 m/s`;
+    vs.textContent = `✓ Velocity OK — ${vel.toFixed(2)} m/s is within 1.5–1.8 m/s range`;
+  } else if (vel < 1.5) {
+    mvc.className = 'mc warn'; vs.className = 'sbar s-warn';
+    vs.textContent = `⚠ Velocity ${vel.toFixed(2)} m/s is below 1.5 m/s — too many filters, consider reducing`;
   } else {
     mvc.className = 'mc bad'; vs.className = 'sbar s-bad';
     vs.textContent = `✗ Velocity ${vel.toFixed(2)} m/s exceeds 1.8 m/s limit — add more filters`;
@@ -438,7 +443,7 @@ function calc() {
 
 renderGrid();
 
-const TRIAL_EXPIRY = new Date('2026-07-13T22:10:00');
+const TRIAL_EXPIRY = new Date('2026-07-13T00:00:00');
 if (new Date() > TRIAL_EXPIRY) {
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('expired-screen').style.display = 'flex';
